@@ -4,6 +4,7 @@
 时间：2022年9月3日
 编译器：Python 3.9
 """
+from numpy import ndarray
 
 '''
 scipy库，其使用方法如下：
