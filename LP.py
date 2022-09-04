@@ -39,7 +39,6 @@ bounds = [0, None], [0, None], [0, None]
 res_s = op.linprog(z_s, A_ub_s, b_ub_s, A_eq_s, b_eq_s, bounds)
 print("目标函数最大值 max z = {}\n此时目标函数的决策变量值为 {}\n".format(-res_s.fun, res_s.x))
 
-
 '''
 PuLP库，其求解过程如下：
     1. pulp.LpProblem 建立优化问题
