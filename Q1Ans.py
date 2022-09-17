@@ -12,6 +12,35 @@ def gph():
     plt.savefig('x_q1_image2.png')
     plt.show()
 
+def valRcd():
+    out = list()
+    tm = list()
+    splT = [10, 20, 40, 60, 100]
+    spl_x_M = list()
+    spl_x_m = list()
+    spl_v_M = list()
+    spl_v_m = list()
+    for i in range(len(xMs)):
+        if i % 2 == 0:
+            out.append([xMs[i], xms[i], vMs[i], vms[i]])
+            tm.append(0.1 * i)
+            if 0.1 * i in splT:
+                spl_x_M.append(str(xMs[i]))
+                spl_x_m.append(str(xms[i]))
+                spl_v_M.append(str(vMs[i]))
+                spl_v_m.append(str(vms[i]))
+    frm = pd.DataFrame(out, index=tm)
+    fil = pd.ExcelWriter('demo.xlsx')
+    frm.to_excel(fil, "sheet1")
+    fil.save()
+
+    fw = open("data/Q1Out2.text", 'w')
+    wrtFil(fw, spl_x_M)
+    wrtFil(fw, spl_x_m)
+    wrtFil(fw, spl_v_M)
+    wrtFil(fw, spl_v_m)
+    fw.close()
+
 def load(fl) -> np.ndarray:
     rd = fl.readline()
     a = rd.split()
@@ -36,31 +65,3 @@ vms = load(fr)
 xms = load(fr)
 fel = load(fr)
 fdp = load(fr)
-
-out = list()
-tm = list()
-splT = [10, 20, 40, 60, 100]
-spl_x_M = list()
-spl_x_m = list()
-spl_v_M = list()
-spl_v_m = list()
-for i in range(len(xMs)):
-    if i % 2 == 0:
-        out.append([xMs[i], xms[i], vMs[i], vms[i]])
-        tm.append(0.1 * i)
-        if 0.1 * i in splT:
-            spl_x_M.append(str(xMs[i]))
-            spl_x_m.append(str(xms[i]))
-            spl_v_M.append(str(vMs[i]))
-            spl_v_m.append(str(vms[i]))
-frm = pd.DataFrame(out, index=tm)
-fil = pd.ExcelWriter('demo.xlsx')
-frm.to_excel(fil, "sheet1")
-fil.save()
-
-fw = open("data/Q1Out2.text", 'w')
-wrtFil(fw, spl_x_M)
-wrtFil(fw, spl_x_m)
-wrtFil(fw, spl_v_M)
-wrtFil(fw, spl_v_m)
-fw.close()
