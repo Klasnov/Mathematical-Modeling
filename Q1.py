@@ -274,7 +274,7 @@ def run():
         dmp.calFDamp(vMs[i], vms[i])
         fdp[i] = dmp.getFDamp()
 
-    f = open("testData.txt", 'w')
+    f = open("Q1Data.txt", 'w')
     f.write(str(tmTol) + '\n')
     f.write(str(N) + '\n')
     wrtFil(f, aMs)
