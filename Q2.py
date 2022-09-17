@@ -1,28 +1,27 @@
+from Q1 import *
 import matplotlib.pyplot as plt
+from matplotlib import cm
+from matplotlib.ticker import LinearLocator, FormatStrFormatter
 import numpy as np
 
-from Q1 import *
 
-prc = 10
+prc = 20
 fM = 4890
 omg = 2.2143
 M_cw = 167.8395
 M_add = 1165.992
 
 cycle = 2 * pi / omg
-tmSlc = 0.1
-tmTol = int(10 * cycle) + 1
+tmSlc = 0.05
+tmTol = int(40 * cycle) + 1
 N = int(tmTol / tmSlc)
 
-c_dp_min = 0
-c_dp_max = 100000
-c_dp_stp = 1000
-stp_n = int((c_dp_max - c_dp_min) / c_dp_stp)
+shl = shell(tmSlc, M_cw, M_add)
+dis = shl.d
+spg = spring()
+vbt = vibrator(shl, spg, dis, tmSlc)
 
-e_dp_min = 0
-e_dp_
-
-class dmp_q2_1(damper):
+class dmp_q2(damper):
     t_delta = 0
     p = 0
     w = 0
@@ -57,32 +56,35 @@ class dmp_q2_1(damper):
     def getPAve(self):
         return self.p_ave
 
-shl = shell(tmSlc, M_cw, M_add)
-dis = shl.d
-spg = spring()
-vbt = vibrator(shl, spg, dis, tmSlc)
-
-cs = np.linspace(c_dp_min, c_dp_max, stp_n)
-std = True
-ps = np.zeros([stp_n])
-ch = np.zeros([stp_n])
+def cal(s: shell, v: vibrator, sp: spring, dmp: damper, tm: int) -> list:
+    rlt = list()
+    s.calAcl(sp.getF(), dmp.getFDamp(), f_wave(tm * tmSlc, fM, omg))
+    s.calVel()
+    rlt.append(s.getVel())
+    s.calDes()
+    rlt.append(s.getDes())
+    v.calAcl(sp.getF(), dmp.getFDamp())
+    v.calVel()
+    rlt.append(v.getVel())
+    v.calDes()
+    rlt.append(v.getDes())
+    return rlt
 
 def prb1():
-    for i in range(stp_n):
-        dmp = dmp_q2_1(cs[i], std, tmSlc, 0.5)
+    c_dp_min = 0
+    c_dp_max = 100000
+    c_dp_stp = 10
+    c_stp_n = int((c_dp_max - c_dp_min) / c_dp_stp)
+    cs = np.linspace(c_dp_min, c_dp_max, c_stp_n)
+    std = True
+    ps = np.zeros([c_stp_n])
+    ch = np.zeros([c_stp_n])
+    for i in range(c_stp_n):
+        dmp = dmp_q2(cs[i], std, tmSlc, 0.5)
         flag = false
         for j in range(N):
-            print("### 系数编号%d/%d，计算轮数%d/%d ###" % (i + 1, stp_n, j + 1, N))
-            shl.calAcl(spg.getF(), dmp.getFDamp(), f_wave(j * tmSlc, fM, omg))
-            shl.calVel()
-            vM = shl.getVel()
-            shl.calDes()
-            xM = shl.getDes()
-            vbt.calAcl(spg.getF(), dmp.getFDamp())
-            vbt.calVel()
-            vm = vbt.getVel()
-            vbt.calDes()
-            xm = vbt.getDes()
+            print("### 系数编号%d/%d，计算轮数%d/%d ###" % (i + 1, c_stp_n, j + 1, N))
+            vM, xM, vm, xm = cal(shl, vbt, spg, dmp, j)
             spg.calF(xM, xm, dis)
             if spg.x <= 0 or spg.x >= 3:
                 ch[i] = 1
@@ -97,7 +99,7 @@ def prb1():
         ps[i] = dmp.getPAve()
     cs_vld = list()
     ps_vld = list()
-    for i in range(stp_n):
+    for i in range(c_stp_n):
         if ch[i] == 0:
             cs_vld.append(cs[i])
             ps_vld.append(ps[i])
@@ -105,11 +107,67 @@ def prb1():
     cs_vld = np.asarray(cs_vld)
     ps_vld = np.asarray(ps_vld)
 
-    f = open("Q2Data1_stp1000.txt", 'w')
+    f = open("Q2Data1.txt", 'w')
     f.write(str(n))
     f.write('\n')
     wrtFil(f, cs_vld)
     wrtFil(f, ps_vld)
     f.close()
 
+def prb2():
+    c_dp_min = 0
+    c_dp_max = 100000
+    c_dp_stp = 100
+    c_stp_n = int((c_dp_max - c_dp_min) / c_dp_stp)
 
+    e_dp_min = 0
+    e_dp_max = 1
+    e_dp_stp = 0.001
+    e_stp_n = int((e_dp_max - e_dp_min) / e_dp_stp)
+
+    cs = np.linspace(c_dp_min, c_dp_max, c_stp_n)
+    es = np.linspace(e_dp_min, e_dp_max, e_stp_n)
+    std = False
+    ps = np.zeros([c_stp_n, e_stp_n])
+    ch = np.zeros([c_stp_n, e_stp_n])
+    for i in range(c_stp_n):
+        for j in range(e_stp_n):
+            dmp = dmp_q2(cs[i], std, tmSlc, es[j])
+            flag = false
+            for k in range(N):
+                print("### 系数编号%d/%d，幂指编号%d/%d，计算轮数%d/%d ###" % (i + 1, c_stp_n, j + 1, e_stp_n, k + 1, N))
+                vM, xM, vm, xm = cal(shl, vbt, spg, dmp, k)
+                spg.calF(xM, xm, dis)
+                if spg.x <= 0 or spg.x >= 3:
+                    ch[i, j] = 1
+                    flag = true
+                    break
+                dmp.calFDamp(vM, vm)
+                dmp.calPow(vM, vm)
+                dmp.calWrk()
+            if flag:
+                continue
+            dmp.calPAve()
+            ps[i, j] = dmp.getPAve()
+    fig = plt.figure()
+    ax = fig.gca(projection='3d')
+    X, Y = np.meshgrid(cs, es)
+    surf = ax.plot_surface(X, Y, ps, cmap=cm.coolwarm, linewidth=0, antialiased=False)
+    fig.colorbar(surf, shrink=0.5, aspect=5)
+    ax.set_zlim(-1.01, 1.01)
+    ax.zaxis.set_major_locator(LinearLocator(10))
+    ax.zaxis.set_major_formatter(FormatStrFormatter('%.02f'))
+    fig.colorbar(surf, shrink=0.5, aspect=5)
+    plt.show()
+
+    f = open("Q2Data2.txt", 'w')
+    f.write(str(c_stp_n))
+    f.write('\n')
+    f.write(str(e_stp_n))
+    f.write('\n')
+    wrtFil(f, cs)
+    wrtFil(f, es)
+    f.close()
+
+prb1()
+prb2()
