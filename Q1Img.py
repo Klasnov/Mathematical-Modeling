@@ -1,8 +1,11 @@
 import numpy as np
 import matplotlib.pyplot as plt
 
-f = open("Q1Data", 'r')
-t = np.linspace(0, 100, 1000)
+
+f = open("Q1Data.txt", 'r')
+tmTol = int(f.readline())
+N = int(f.readline())
+t = np.linspace(0, tmTol, N)
 
 def load(fl) -> np.ndarray:
     rd = fl.readline()
@@ -19,8 +22,10 @@ xms = load(f)
 fel = load(f)
 fdp = load(f)
 
-plt.plot(t, xMs, 'b', label="$x_{浮子}$")
-plt.plot(t, xms, 'r--', label='$x_{振子}$')
+plt.title('$X$ of the float and the vibrator')
+plt.plot(t, xMs, c='b', label="$x_{Float}$")
+plt.plot(t, xms, c='r', linestyle=':', label='$x_{Vibrator}$')
+plt.legend()
 plt.xlabel('$t$')
 plt.ylabel('$x$')
 plt.savefig('x_image.png')

@@ -5,7 +5,6 @@
 """
 
 from sympy import *
-import matplotlib.pyplot as plt
 import numpy as np
 
 '''
@@ -13,17 +12,39 @@ import numpy as np
 '''
 rho = 1025
 g = 9.8
+
+fM = 6250
+omg = 1.4005
+M_cw = 656.3616
+M_add = 1335.535
+
+c_dmp = 10000
+dmp_isStd = True
+
+cycle = 2 * pi / omg
+tmSlc = 0.1
+tmTol = int(40 * cycle) + 1
+N = int(tmTol / tmSlc)
+
 t = Symbol('t')
 prc = 20
+
 
 '''
 激励力的大小计算
 '''
-def f_wave(time):
-    f_max = 6250
-    omega = 1.4005
+def f_wave(time, f_max, omega):
     fWv = round(f_max * cos(omega * time), prc)
     return fWv
+
+'''
+计算得到的数据写入文件
+'''
+def wrtFil(fl, a: np.ndarray):
+    temp = a.astype(str)
+    for elm in temp:
+        fl.write(elm + " ")
+    fl.write('\n')
 
 '''
 外壳类
@@ -34,8 +55,8 @@ class shell:
     r = 1
     h_clid = 3
     h_cone = 0.8
-    cw = 656.3616
-    m_add = 1335.535
+    cw = 0
+    m_add = 0
     d = 0
     x0 = 0
     x = 0
@@ -43,7 +64,10 @@ class shell:
     a = 0
 
     # 初始化得到起始位置
-    def __init__(self, timeSpace):
+    def __init__(self, timeSpace, cw, add):
+        # 属性初始化
+        self.cw = cw
+        self.m_add = add
         # 变量定义
         V = Symbol('V')
         h = Symbol('h')
@@ -149,9 +173,13 @@ class spring:
 阻尼器类
 '''
 class damper:
-    c = 10000
+    c = 0
     f = 0
     w = 0
+
+    def __init__(self, c, isStd):
+        if isStd:
+            self.c = c
 
     def calFDamp(self, v_M, v_m):
         self.f = round(self.c * (v_M - v_m), prc)
@@ -201,73 +229,62 @@ class vibrator:
     def getDes(self):
         return self.x
 
-N = 1000
-tmTol = 100
+'''
+进行数据运算
+'''
+def run():
+    shl = shell(tmSlc, M_cw, M_add)
+    dis = shl.d
+    spg = spring()
+    vbt = vibrator(shl, spg, dis, tmSlc)
+    dmp = damper(c_dmp, dmp_isStd)
 
-tmSlc = tmTol / N
-shl = shell(tmSlc)
-dis = shl.d
-spg = spring()
-vbt = vibrator(shl, spg, dis, tmSlc)
-dmp = damper()
+    print("浮子的质心初始位置：%.5f" % shl.x0)
+    print("弹簧的初始长度：%.5f" % spg.x)
+    print("振子的质心初始位置：%.5f" % vbt.x0)
 
-print("浮子的质心初始位置：%.5f" % shl.x0)
-print("弹簧的初始长度：%.5f" % spg.x)
-print("振子的质心初始位置：%.5f" % vbt.x0)
+    aMs = np.zeros([N])
+    vMs = np.zeros([N])
+    xMs = np.zeros([N])
+    ams = np.zeros([N])
+    vms = np.zeros([N])
+    xms = np.zeros([N])
+    fel = np.zeros([N])
+    fdp = np.zeros([N])
 
-timeSlice = np.linspace(0, tmTol, N)
-aMs = np.zeros([N])
-vMs = np.zeros([N])
-xMs = np.zeros([N])
-ams = np.zeros([N])
-vms = np.zeros([N])
-xms = np.zeros([N])
-fel = np.zeros([N])
-fdp = np.zeros([N])
+    for i in range(N):
+        print("### 共需要%d轮计算，现在正在进行第%d轮 ###" % (N, i + 1))
+        shl.calAcl(spg.getF(), dmp.getFDamp(), f_wave(i * tmSlc, fM, omg))
+        aMs[i] = shl.getAcl()
+        shl.calVel()
+        vMs[i] = shl.getVel()
+        shl.calDes()
+        xMs[i] = shl.getDes()
 
-for i in range(N):
-    print("\n第 %d 轮" % (i + 1))
-    shl.calAcl(spg.getF(), dmp.getFDamp(), f_wave(i * tmSlc))
-    aMs[i] = shl.getAcl()
-    print("aMs[%d] = [%f]" % (i + 1, aMs[i]))
-    shl.calVel()
-    vMs[i] = shl.getVel()
-    print("vMs[%d] = [%f]" % (i + 1, vMs[i]))
-    shl.calDes()
-    xMs[i] = shl.getDes()
-    print("xMs[%d] = [%f]" % (i + 1, xMs[i]))
+        vbt.calAcl(spg.getF(), dmp.getFDamp())
+        ams[i] = vbt.getAcl()
+        vbt.calVel()
+        vms[i] = vbt.getVel()
+        vbt.calDes()
+        xms[i] = vbt.getDes()
 
-    vbt.calAcl(spg.getF(), dmp.getFDamp())
-    ams[i] = vbt.getAcl()
-    print("ams[%d] = [%f]" % (i + 1, ams[i]))
-    vbt.calVel()
-    vms[i] = vbt.getVel()
-    print("vms[%d] = [%f]" % (i + 1, vms[i]))
-    vbt.calDes()
-    xms[i] = vbt.getDes()
-    print("xms[%d] = [%f]" % (i + 1, xms[i]))
+        spg.calF(xMs[i], xms[i], dis)
+        fel[i] = spg.getF()
 
-    spg.calF(xMs[i], xms[i], dis)
-    fel[i] = spg.getF()
-    print("fel[%d] = [%f]" % (i + 1, fel[i]))
+        dmp.calFDamp(vMs[i], vms[i])
+        fdp[i] = dmp.getFDamp()
 
-    dmp.calFDamp(vMs[i], vms[i])
-    fdp[i] = dmp.getFDamp()
-    print("fdp[%d] = [%f]" % (i + 1, fdp[i]))
+    f = open("testData.txt", 'w')
+    f.write(str(tmTol) + '\n')
+    f.write(str(N) + '\n')
+    wrtFil(f, aMs)
+    wrtFil(f, vMs)
+    wrtFil(f, xMs)
+    wrtFil(f, ams)
+    wrtFil(f, vms)
+    wrtFil(f, xms)
+    wrtFil(f, fel)
+    wrtFil(f, fdp)
+    f.close()
 
-def wrtFil(fl, a: np.ndarray):
-    temp = a.astype(str)
-    for elm in temp:
-        fl.write(elm + " ")
-    fl.write('\n')
-
-f = open("Q1Data", 'w')
-wrtFil(f, aMs)
-wrtFil(f, vMs)
-wrtFil(f, xMs)
-wrtFil(f, ams)
-wrtFil(f, vms)
-wrtFil(f, xms)
-wrtFil(f, fel)
-wrtFil(f, fdp)
-f.close()
+run()
