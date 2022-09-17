@@ -3,7 +3,6 @@
 作者：Klasnov
 时间：2022年9月16日
 """
-import io
 
 from sympy import *
 import matplotlib.pyplot as plt
@@ -15,7 +14,7 @@ import numpy as np
 rho = 1025
 g = 9.8
 t = Symbol('t')
-prc = 25
+prc = 20
 
 '''
 激励力的大小计算
@@ -83,8 +82,12 @@ class shell:
 
     # 计算当前加速度
     def calAcl(self, f_elas, f_damp, f_wv):
-        self.a = round((self.f_float() - self.m * g - f_elas - f_damp +
-                        f_wv + (self.cw * self.v)) / (self.m + self.m_add), prc)
+        if (self.x + self.d) - (self.h_clid / 2 + self.h_cone) < 0 and (self.x + self.d) + self.h_clid / 2 > 0:
+            self.a = round((self.f_float() - self.m * g - f_elas - f_damp +
+                            f_wv - (self.cw * self.v)) / (self.m + self.m_add), prc)
+        else:
+            self.a = round((self.f_float() - self.m * g - f_elas - f_damp
+                            - (self.cw * self.v)) / (self.m + self.m_add), prc)
 
     # 获取当前的加速度
     def getAcl(self):
@@ -148,6 +151,7 @@ class spring:
 class damper:
     c = 10000
     f = 0
+    w = 0
 
     def calFDamp(self, v_M, v_m):
         self.f = round(self.c * (v_M - v_m), prc)
@@ -197,8 +201,8 @@ class vibrator:
     def getDes(self):
         return self.x
 
-N = 10000
-tmTol = 20
+N = 1000
+tmTol = 100
 
 tmSlc = tmTol / N
 shl = shell(tmSlc)
@@ -257,7 +261,7 @@ def wrtFil(fl, a: np.ndarray):
         fl.write(elm + " ")
     fl.write('\n')
 
-f = open("data", 'w')
+f = open("Q1Data", 'w')
 wrtFil(f, aMs)
 wrtFil(f, vMs)
 wrtFil(f, xMs)
@@ -267,6 +271,3 @@ wrtFil(f, xms)
 wrtFil(f, fel)
 wrtFil(f, fdp)
 f.close()
-
-plt.scatter(timeSlice, xMs, marker='+')
-plt.show()
