@@ -29,7 +29,7 @@ N = int(tmTol / tmSlc)
 t = Symbol('t')
 prc = 20
 
-f_name = "Q1Data1.txt"
+f_name = "data/Q1Data1.txt"
 
 '''
 激励力的大小计算

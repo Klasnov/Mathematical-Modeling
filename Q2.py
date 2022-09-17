@@ -12,7 +12,7 @@ M_cw = 167.8395
 M_add = 1165.992
 
 cycle = 2 * pi / omg
-tmSlc = 0.05
+tmSlc = 0.1
 tmTol = int(40 * cycle) + 1
 N = int(tmTol / tmSlc)
 
@@ -107,7 +107,7 @@ def prb1():
     cs_vld = np.asarray(cs_vld)
     ps_vld = np.asarray(ps_vld)
 
-    f = open("Q2Data1.txt", 'w')
+    f = open("data/Q2Data1.txt", 'w')
     f.write(str(n))
     f.write('\n')
     wrtFil(f, cs_vld)
@@ -115,14 +115,14 @@ def prb1():
     f.close()
 
 def prb2():
-    c_dp_min = 0
-    c_dp_max = 100000
+    c_dp_min = 30000
+    c_dp_max = 40000
     c_dp_stp = 100
     c_stp_n = int((c_dp_max - c_dp_min) / c_dp_stp)
 
     e_dp_min = 0
     e_dp_max = 1
-    e_dp_stp = 0.001
+    e_dp_stp = 0.01
     e_stp_n = int((e_dp_max - e_dp_min) / e_dp_stp)
 
     cs = np.linspace(c_dp_min, c_dp_max, c_stp_n)
@@ -160,7 +160,7 @@ def prb2():
     fig.colorbar(surf, shrink=0.5, aspect=5)
     plt.show()
 
-    f = open("Q2Data2.txt", 'w')
+    f = open("data/Q2Data2.txt", 'w')
     f.write(str(c_stp_n))
     f.write('\n')
     f.write(str(e_stp_n))
@@ -169,5 +169,4 @@ def prb2():
     wrtFil(f, es)
     f.close()
 
-prb1()
 prb2()
