@@ -1,6 +1,7 @@
 import matplotlib.pyplot as plt
-from Q1 import *
+import numpy as np
 
+from Q1 import *
 
 prc = 10
 fM = 4890
@@ -52,9 +53,11 @@ vbt = vibrator(shl, spg, dis, tmSlc)
 cs = np.linspace(c_dp_min, c_dp_max, stp_n)
 std = True
 ps = np.zeros([stp_n])
+ch = np.zeros([stp_n])
 
 for i in range(stp_n):
     dmp = dmp_q2_1(cs[i], std, tmSlc)
+    flag = false
     for j in range(N):
         print("### 系数编号%d/%d，计算轮数%d/%d ###" % (i + 1, stp_n, j + 1, N))
         shl.calAcl(spg.getF(), dmp.getFDamp(), f_wave(j * tmSlc, fM, omg))
@@ -66,20 +69,36 @@ for i in range(stp_n):
         vbt.calVel()
         vm = vbt.getVel()
         vbt.calDes()
-        xm = shl.getDes()
+        xm = vbt.getDes()
         spg.calF(xM, xm, dis)
+        if spg.x <= 0 or spg.x >= 3:
+            ch[i] = 1
+            flag = true
+            break
         dmp.calFDamp(vM, vm)
         dmp.calPow(vM, vm)
         dmp.calWrk()
+    if flag:
+        continue
     dmp.calPAve()
     ps[i] = dmp.getPAve()
 
+cs_vld = list()
+ps_vld = list()
+for i in range(stp_n):
+    if ch[i] == 0:
+        cs_vld.append(cs[i])
+        ps_vld.append(ps[i])
+n = len(cs_vld)
+cs_vld = np.asarray(cs_vld)
+ps_vld = np.asarray(ps_vld)
+
 f = open("Q2Data1_stp1000.txt", 'w')
-f.write(str(stp_n))
+f.write(str(n))
 f.write('\n')
-wrtFil(f, cs)
-wrtFil(f, ps)
+wrtFil(f, cs_vld)
+wrtFil(f, ps_vld)
 f.close()
 
-plt.plot(cs, ps)
+plt.scatter(cs_vld, ps_vld)
 plt.show()

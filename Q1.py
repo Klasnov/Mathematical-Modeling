@@ -19,7 +19,7 @@ M_cw = 656.3616
 M_add = 1335.535
 
 c_dmp = 10000
-dmp_isStd = True
+dmp_isStd = False
 
 cycle = 2 * pi / omg
 tmSlc = 0.1
@@ -29,6 +29,7 @@ N = int(tmTol / tmSlc)
 t = Symbol('t')
 prc = 20
 
+f_name = "Q1Data2.txt"
 
 '''
 激励力的大小计算
@@ -153,7 +154,7 @@ class spring:
 
     # 计算当前弹力
     def calF(self, x_M, x_m, d):
-        self.x = round((x_m - vibrator.h / 2) - ((x_M + d) - shell.h_cone / 2), prc)
+        self.x = round((x_m - vibrator.h / 2) - ((x_M + d) - shell.h_clid / 2), prc)
         self.delta = round(self.l - self.x, prc)
         self.f = round(self.k * self.delta, prc)
 
@@ -176,13 +177,19 @@ class damper:
     c = 0
     f = 0
     w = 0
+    std = True
 
     def __init__(self, c, isStd):
-        if isStd:
-            self.c = c
+        self.c = c
+        self.std = isStd
+
 
     def calFDamp(self, v_M, v_m):
-        self.f = round(self.c * (v_M - v_m), prc)
+        v_dif = v_M - v_m
+        if self.std:
+            self.f = round(self.c * v_dif, prc)
+        else:
+            self.f = round(self.c * sqrt(abs(v_dif)) * v_dif, prc)
 
     def getFDamp(self):
         return self.f
@@ -204,6 +211,7 @@ class vibrator:
     def __init__(self, M: shell, s: spring, d, time):
         self.x0 = (M.x + d) - M.h_clid / 2 + s.x + self.h / 2
         self.t_delta = time
+        self.x = self.x0
 
     # 计算当前加速度
     def calAcl(self, f_els, f_dmp):
@@ -239,10 +247,6 @@ def run():
     vbt = vibrator(shl, spg, dis, tmSlc)
     dmp = damper(c_dmp, dmp_isStd)
 
-    print("浮子的质心初始位置：%.5f" % shl.x0)
-    print("弹簧的初始长度：%.5f" % spg.x)
-    print("振子的质心初始位置：%.5f" % vbt.x0)
-
     aMs = np.zeros([N])
     vMs = np.zeros([N])
     xMs = np.zeros([N])
@@ -274,7 +278,7 @@ def run():
         dmp.calFDamp(vMs[i], vms[i])
         fdp[i] = dmp.getFDamp()
 
-    f = open("Q1Data.txt", 'w')
+    f = open(f_name, 'w')
     f.write(str(tmTol) + '\n')
     f.write(str(N) + '\n')
     wrtFil(f, aMs)
