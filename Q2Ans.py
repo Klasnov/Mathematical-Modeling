@@ -7,7 +7,7 @@ def load(fl) -> np.ndarray:
     a = np.array(a).astype(np.float64)
     return a
 
-f = open('Q2Data1_stp1000.txt', 'r')
+f = open('data/Q2Data1_stp1000.txt', 'r')
 stp_n = int(f.readline())
 cs = load(f)
 ps = load(f)

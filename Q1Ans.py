@@ -17,7 +17,7 @@ def load(fl) -> np.ndarray:
     a = np.array(a).astype(np.float64)
     return a
 
-f = open("Q1Data2.txt", 'r')
+f = open("data/Q1Data2.txt", 'r')
 tmTol = int(f.readline())
 N = int(f.readline())
 t = np.linspace(0, tmTol, N)
