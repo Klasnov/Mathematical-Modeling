@@ -12,5 +12,5 @@ stp_n = int(f.readline())
 cs = load(f)
 ps = load(f)
 
-plt.plot(cs[3:33], ps[3:33])
+plt.scatter(cs, ps)
 plt.show()

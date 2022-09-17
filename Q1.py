@@ -19,7 +19,7 @@ M_cw = 656.3616
 M_add = 1335.535
 
 c_dmp = 10000
-dmp_isStd = False
+dmp_isStd = True
 
 cycle = 2 * pi / omg
 tmSlc = 0.1
@@ -29,7 +29,7 @@ N = int(tmTol / tmSlc)
 t = Symbol('t')
 prc = 20
 
-f_name = "Q1Data2.txt"
+f_name = "Q1Data1.txt"
 
 '''
 激励力的大小计算
@@ -77,12 +77,12 @@ class shell:
         F = (rho * g * V) - (shell.m * g + vibrator.m * g)
         V = solve(F, V)[0]
         # 圆柱体浸泡在水中的深度
-        fh = pi * self.r * self.r * self.h_cone / 3 + pi * self.r * self.r * h - V
+        fh = (pi * self.h_cone / 3 + pi * h) - V
         h = solve(fh, h)[0]
         # 求解浮子的质心位置
         l = sqrt(self.r ** 2 + self.h_cone ** 2)
         x = Symbol('x')
-        fx = (2 * pi * self.r * self.h_clid * x) - (pi * l * self.r * (self.h_clid / 2 + self.h_cone / 4 - x))
+        fx = (2 * pi * self.h_clid * x) - (pi * l * self.r * (self.h_clid / 2 + self.h_cone / 4 - x))
         self.d = solve(fx, x)[0]
         # 计算浮子起始时刻的坐标
         self.x0 = self.h_clid / 2 - h - self.d
@@ -182,7 +182,6 @@ class damper:
     def __init__(self, c, isStd):
         self.c = c
         self.std = isStd
-
 
     def calFDamp(self, v_M, v_m):
         v_dif = v_M - v_m
@@ -291,4 +290,4 @@ def run():
     wrtFil(f, fdp)
     f.close()
 
-run()
+# run()

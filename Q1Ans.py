@@ -2,13 +2,13 @@ import numpy as np
 import matplotlib.pyplot as plt
 
 def gph():
-    plt.title('$a$ of the float and the vibrator')
-    plt.plot(t, aMs, c='b', label="$a_{Float}$")
-    plt.plot(t, ams, c='r', linestyle=':', label='$a_{Vibrator}$')
+    plt.title('$x$ of the float and the vibrator')
+    plt.plot(t, xMs, c='b', label="$x_{Float}$")
+    plt.plot(t, xms, c='r', linestyle=':', label='$x_{Vibrator}$')
     plt.legend()
     plt.xlabel('$t$')
-    plt.ylabel('$a$')
-    plt.savefig('a_q1_image2.png')
+    plt.ylabel('$x$')
+    plt.savefig('x_q1_image2.png')
     plt.show()
 
 def load(fl) -> np.ndarray:
@@ -31,4 +31,4 @@ xms = load(f)
 fel = load(f)
 fdp = load(f)
 
-gph()
+
