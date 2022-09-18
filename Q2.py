@@ -9,7 +9,7 @@ M_cw = 167.8395
 M_add = 1165.992
 
 cycle = 2 * pi / omg
-tmSlc = 0.1
+tmSlc = 0.05
 tmTol = int(40 * cycle) + 1
 N = int(tmTol / tmSlc)
 
