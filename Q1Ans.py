@@ -9,7 +9,7 @@ def gph():
     plt.legend()
     plt.xlabel('$t$')
     plt.ylabel('$x$')
-    plt.savefig('x_q1_image2.png')
+    plt.savefig("x_q1_image2.png")
     plt.show()
 
 def valRcd():

@@ -1,7 +1,4 @@
 from Q1 import *
-import matplotlib.pyplot as plt
-from matplotlib import cm
-from matplotlib.ticker import LinearLocator, FormatStrFormatter
 import numpy as np
 
 
@@ -71,9 +68,9 @@ def cal(s: shell, v: vibrator, sp: spring, dmp: damper, tm: int) -> list:
     return rlt
 
 def prb1():
-    c_dp_min = 0
-    c_dp_max = 100000
-    c_dp_stp = 10
+    c_dp_min = 29000
+    c_dp_max = 32000
+    c_dp_stp = 100
     c_stp_n = int((c_dp_max - c_dp_min) / c_dp_stp)
     cs = np.linspace(c_dp_min, c_dp_max, c_stp_n)
     std = True
@@ -107,7 +104,7 @@ def prb1():
     cs_vld = np.asarray(cs_vld)
     ps_vld = np.asarray(ps_vld)
 
-    f = open("data/Q2Data1.txt", 'w')
+    f = open("data/Q2Data1_prc.txt", 'w')
     f.write(str(n))
     f.write('\n')
     wrtFil(f, cs_vld)
@@ -115,14 +112,14 @@ def prb1():
     f.close()
 
 def prb2():
-    c_dp_min = 30000
-    c_dp_max = 40000
-    c_dp_stp = 100
+    c_dp_min = 0
+    c_dp_max = 100000
+    c_dp_stp = 10000
     c_stp_n = int((c_dp_max - c_dp_min) / c_dp_stp)
 
     e_dp_min = 0
     e_dp_max = 1
-    e_dp_stp = 0.01
+    e_dp_stp = 0.1
     e_stp_n = int((e_dp_max - e_dp_min) / e_dp_stp)
 
     cs = np.linspace(c_dp_min, c_dp_max, c_stp_n)
@@ -149,17 +146,6 @@ def prb2():
                 continue
             dmp.calPAve()
             ps[i, j] = dmp.getPAve()
-    fig = plt.figure()
-    ax = fig.gca(projection='3d')
-    X, Y = np.meshgrid(cs, es)
-    surf = ax.plot_surface(X, Y, ps, cmap=cm.coolwarm, linewidth=0, antialiased=False)
-    fig.colorbar(surf, shrink=0.5, aspect=5)
-    ax.set_zlim(-1.01, 1.01)
-    ax.zaxis.set_major_locator(LinearLocator(10))
-    ax.zaxis.set_major_formatter(FormatStrFormatter('%.02f'))
-    fig.colorbar(surf, shrink=0.5, aspect=5)
-    plt.show()
-
     f = open("data/Q2Data2.txt", 'w')
     f.write(str(c_stp_n))
     f.write('\n')
@@ -167,6 +153,7 @@ def prb2():
     f.write('\n')
     wrtFil(f, cs)
     wrtFil(f, es)
+    f.write('\n')
+    for i in range(len(cs)):
+        wrtFil(f, ps[i])
     f.close()
-
-prb2()
