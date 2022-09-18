@@ -130,5 +130,7 @@ def run():
     spg = spring()
     vbt = vbt_shake(shl, spg, dis, tmSlc)
     dmp = damper(c_dmp, dmp_isStd)
+    print(shl.x0)
+    print(vbt.x)
 
-
+run()
