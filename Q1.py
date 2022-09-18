@@ -22,7 +22,7 @@ c_dmp = 10000
 dmp_isStd = True
 
 cycle = 2 * pi / omg
-tmSlc = 0.1
+tmSlc = 0.2
 tmTol = int(40 * cycle) + 1
 N = int(tmTol / tmSlc)
 
@@ -290,4 +290,4 @@ def run():
     wrtFil(f, fdp)
     f.close()
 
-# run()
+run()

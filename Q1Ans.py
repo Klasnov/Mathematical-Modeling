@@ -9,7 +9,7 @@ def gph():
     plt.legend()
     plt.xlabel('$t$')
     plt.ylabel('$x$')
-    plt.savefig("x_q1_image2.png")
+    plt.savefig("x_q1_wrong.png")
     plt.show()
 
 def valRcd():
@@ -43,7 +43,7 @@ def valRcd():
 
 def load(fl) -> np.ndarray:
     rd = fl.readline()
-    a = rd.split(' ')
+    a = rd.split()
     a = np.array(a).astype(np.float64)
     return a
 
@@ -52,7 +52,7 @@ def wrtFil(fl, a):
         fl.write(elm + ", ")
     fl.write('\n')
 
-fr = open("data/Q1Data2.txt", 'r')
+fr = open("data/Q1Data1_wrong.txt", 'r')
 tmTol = int(fr.readline())
 N = int(fr.readline())
 t = np.linspace(0, tmTol, N)
@@ -65,3 +65,5 @@ vms = load(fr)
 xms = load(fr)
 fel = load(fr)
 fdp = load(fr)
+
+gph()
