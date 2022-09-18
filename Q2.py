@@ -9,8 +9,8 @@ M_cw = 167.8395
 M_add = 1165.992
 
 cycle = 2 * pi / omg
-tmSlc = 0.05
-tmTol = int(40 * cycle) + 1
+tmSlc = 0.01
+tmTol = int(8 * cycle) + 1
 N = int(tmTol / tmSlc)
 
 shl = shell(tmSlc, M_cw, M_add)
@@ -68,9 +68,9 @@ def cal(s: shell, v: vibrator, sp: spring, dmp: damper, tm: int) -> list:
     return rlt
 
 def prb1():
-    c_dp_min = 29000
-    c_dp_max = 32000
-    c_dp_stp = 100
+    c_dp_min = 0
+    c_dp_max = 100000
+    c_dp_stp = 1000
     c_stp_n = int((c_dp_max - c_dp_min) / c_dp_stp)
     cs = np.linspace(c_dp_min, c_dp_max, c_stp_n)
     std = True
@@ -104,7 +104,7 @@ def prb1():
     cs_vld = np.asarray(cs_vld)
     ps_vld = np.asarray(ps_vld)
 
-    f = open("data/Q2Data1_prc.txt", 'w')
+    f = open("data/Q2Data1_rgh.txt", 'w')
     f.write(str(n))
     f.write('\n')
     wrtFil(f, cs_vld)
@@ -114,13 +114,11 @@ def prb1():
 def prb2():
     c_dp_min = 0
     c_dp_max = 100000
-    c_dp_stp = 10000
-    c_stp_n = int((c_dp_max - c_dp_min) / c_dp_stp)
+    c_stp_n = 15
 
     e_dp_min = 0
     e_dp_max = 1
-    e_dp_stp = 0.1
-    e_stp_n = int((e_dp_max - e_dp_min) / e_dp_stp)
+    e_stp_n = 15
 
     cs = np.linspace(c_dp_min, c_dp_max, c_stp_n)
     es = np.linspace(e_dp_min, e_dp_max, e_stp_n)
@@ -146,7 +144,7 @@ def prb2():
                 continue
             dmp.calPAve()
             ps[i, j] = dmp.getPAve()
-    f = open("data/Q2Data2.txt", 'w')
+    f = open("data/Q2Data2_rgh.txt", 'w')
     f.write(str(c_stp_n))
     f.write('\n')
     f.write(str(e_stp_n))
@@ -157,3 +155,5 @@ def prb2():
     for i in range(len(cs)):
         wrtFil(f, ps[i])
     f.close()
+
+prb2()

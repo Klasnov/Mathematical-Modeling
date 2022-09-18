@@ -4,12 +4,20 @@ import pandas as pd
 
 def gph():
     plt.title('$x$ of the float and the vibrator')
-    plt.plot(t, xMs, c='b', label="$x_{Float}$")
-    plt.plot(t, xms, c='r', linestyle=':', label='$x_{Vibrator}$')
+    plt.plot(tms, xMs, c='b', label="$x_{Float}$")
+    plt.plot(tms, xms, c='r', linestyle=':', label='$x_{Vibrator}$')
     plt.legend()
     plt.xlabel('$t$')
     plt.ylabel('$x$')
-    plt.savefig("x_q1_wrong.png")
+    plt.savefig("img/问题1第1问位移.png")
+    plt.show()
+
+def testDraw(tm, rf, name):
+    plt.title("Change Trend of {}".format(name))
+    plt.plot(tm, rf)
+    plt.xlabel('$t$')
+    plt.ylabel('$var$')
+    plt.savefig("img/test/测试数集：{}".format(name))
     plt.show()
 
 def valRcd():
@@ -52,11 +60,10 @@ def wrtFil(fl, a):
         fl.write(elm + ", ")
     fl.write('\n')
 
-fr = open("data/Q1Data1_wrong.txt", 'r')
+fr = open("data/Data_test.txt", 'r')
 tmTol = int(fr.readline())
 N = int(fr.readline())
-t = np.linspace(0, tmTol, N)
-
+tms = load(fr)
 aMs = load(fr)
 vMs = load(fr)
 xMs = load(fr)
@@ -65,5 +72,7 @@ vms = load(fr)
 xms = load(fr)
 fel = load(fr)
 fdp = load(fr)
-
-gph()
+st = [aMs, vMs, xMs, ams, vms, xms, fel, fdp]
+nm = ['a_M', 'v_M', 'x_M', 'a_m', 'v_m', 'x_m', 'f_elastic', 'f_damper']
+for i in range(len(st)):
+    testDraw(tms, st[i], nm[i])
