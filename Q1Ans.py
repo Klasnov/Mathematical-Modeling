@@ -43,7 +43,7 @@ def valRcd():
 
 def load(fl) -> np.ndarray:
     rd = fl.readline()
-    a = rd.split()
+    a = rd.split(' ')
     a = np.array(a).astype(np.float64)
     return a
 

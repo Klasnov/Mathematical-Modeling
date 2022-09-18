@@ -25,32 +25,25 @@ def gph1():
     plt.show()
 
 def gph2():
-    '''fig = plt.figure()
+    f = open("data/Q2Data2.txt", 'r')
+    n = int(f.readline())
+    f.readline()
+    cs = load(f)
+    es = load(f)
+    f.readline()
+    ps = np.zeros([n, n])
+    for i in range(n):
+        ps[i] = load(f)
+    fig = plt.figure()
     ax = fig.gca(projection='3d')
-    x, y = np.meshgrid(es, cs)
-    X, Y = x.ravel(), y.ravel()
+    cs, es = np.meshgrid(cs, es)
+    cs, es = cs.ravel(), es.ravel()
     height = np.zeros_like(ps.flatten())
     width = depth = 0.3
-    color = plt.cm.Set2(random.choice(range(plt.cm.Set2.N)))
-    c = ['r'] * len(ps)
-    ax.bar3d(X, Y, height, width, depth, ps.flatten(), color=c, shade=False)
-    ax.set_xlabel('X')
-    ax.set_ylabel('Y')
-    ax.set_zlabel('Z')
-    plt.show()'''
-    mpl.rcParams['font.size'] = 10
-    fig = plt.figure()
-    ax = fig.add_subplot(111, projection='3d')
-    z = 2011
-    xs = range(1, 13)
-    ys = 1000 * np.random.rand(12)
-    color = plt.cm.Set2(random.choice(range(plt.cm.Set2.N)))
-    ax.bar(xs, ys, zs=z, zdir='y', color=color, alpha=0.8)
-    ax.xaxis.set_major_locator(mpl.ticker.FixedLocator(xs))
-    ax.yaxis.set_major_locator(mpl.ticker.FixedLocator(ys))
-    ax.set_xlabel('Month')
-    ax.set_ylabel('Year')
-    ax.set_zlabel('Sales Net [usd]')
+    ax.bar3d(es, cs, height, width, depth, ps.flatten(), color='c', shade=False, alpha=0.4)
+    ax.set_xlabel('Damping Power Index')
+    ax.set_ylabel('Damping Proportional Coefficient')
+    ax.set_zlabel('Output Power')
     plt.show()
 
 gph2()
